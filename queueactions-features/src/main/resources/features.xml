@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="queueactions-${pom.version}">
+
+    <feature name="queueactions" version="${pom.version}">
+    	<feature>camel</feature>
+    	<feature>camel-jms</feature>
+    	<feature>camel-stream</feature>
+    	<feature>camel-csv</feature>
+    	<feature>camel-jaxb</feature>    	
+        <bundle>mvn:com.jjinterna.queueactions/queueactions-model/${pom.version}</bundle>
+        <bundle>mvn:com.jjinterna.queueactions/queueactions-publisher-jms/${pom.version}</bundle>
+    </feature>
+
+</features>

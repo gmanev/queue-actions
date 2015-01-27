@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions name="QueueActionsServiceService"
+	targetNamespace="http://queueactions.jjinterna.com/service" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:tns="http://queueactions.jjinterna.com/service" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<wsdl:types>
+		<xsd:schema targetNamespace="http://queueactions.jjinterna.com/service"
+			xmlns:cns="http://queueactions.jjinterna.com/model">
+
+			<xsd:import schemaLocation="QueueActions.xsd" namespace="http://queueactions.jjinterna.com/model" />
+		</xsd:schema>
+	</wsdl:types>
+</wsdl:definitions>			

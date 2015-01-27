@@ -1,0 +1,47 @@
+<xsd:schema
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://queueactions.jjinterna.com/model"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified"
+    targetNamespace="http://queueactions.jjinterna.com/model">
+
+    <xsd:simpleType name="QueueEventType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ABANDON" />
+            <xsd:enumeration value="ADDMEMBER" />
+            <xsd:enumeration value="COMPLETEAGENT" />
+            <xsd:enumeration value="COMPLETECALLER" />
+            <xsd:enumeration value="CONFIGRELOAD" />
+            <xsd:enumeration value="CONNECT" />
+            <xsd:enumeration value="DID" />
+            <xsd:enumeration value="ENTERQUEUE" />
+            <xsd:enumeration value="EXITWITHTIMEOUT" />
+            <xsd:enumeration value="HEARTBEAT" />
+            <xsd:enumeration value="HOTDESK" />
+            <xsd:enumeration value="PAUSE" />
+            <xsd:enumeration value="PAUSEALL" />
+            <xsd:enumeration value="PAUSEREASON" />
+            <xsd:enumeration value="QUEUESTART" />
+            <xsd:enumeration value="REMOVEMEMBER" />
+            <xsd:enumeration value="RINGNOANSWER" />
+            <xsd:enumeration value="UNPAUSE" />
+            <xsd:enumeration value="UNPAUSEALL" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:complexType name="QueueEvent">
+        <xsd:sequence>
+        	<xsd:element name="timeId" type="xsd:int" />
+        	<xsd:element name="callId" type="xsd:string" />
+        	<xsd:element name="queue" type="xsd:string" />        	
+        	<xsd:element name="agent" type="xsd:string" />
+        	<xsd:element name="verb" type="tns:QueueEventType" />
+			<xsd:element name="data1" type="xsd:string" minOccurs="0" />
+			<xsd:element name="data2" type="xsd:string" minOccurs="0" />
+			<xsd:element name="data3" type="xsd:string" minOccurs="0" />
+			<xsd:element name="data4" type="xsd:string" minOccurs="0" />
+			<xsd:element name="data5" type="xsd:string" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>
