@@ -28,7 +28,7 @@
             <xsd:enumeration value="UNPAUSEALL" />
         </xsd:restriction>
     </xsd:simpleType>
-    
+
     <xsd:complexType name="QueueEvent">
         <xsd:sequence>
         	<xsd:element name="timeId" type="xsd:int" />

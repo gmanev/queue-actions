@@ -35,6 +35,7 @@
 		<module>queueactions-model</module>
 		<module>queueactions-publisher-jms</module>
 		<module>queueactions-features</module>
+		<module>queueactions-subscriber-jms</module>
 	</modules>
 
 	<build>

@@ -16,12 +16,13 @@ public class JmsPublisherRoute extends RouteBuilder {
 
 	@Override
 	public void configure() throws Exception {
-		
+
 		JaxbDataFormat jaxb = new JaxbDataFormat();
 		jaxb.setContextPath(QueueEvent.class.getPackage().getName());
-		jaxb.setPartClass("com.jjinterna.queueactions.model.QueueEvent");
+		jaxb.setPartClass(QueueEvent.class.getName());
+		jaxb.setPartNamespace("{http://queueactions.jjinterna.com/model}QueueEvent");
 
-		from("stream:file?fileName=/tmp/queue_log").id("queue_log2jms")
+		from("stream:file?fileName={{fileName}}&scanStream=true&scanStreamDelay=1000").id("queue_log2jms")
 		.unmarshal(new CsvDataFormat("|"))
 		.process(new Processor() {			
 			@Override
@@ -32,7 +33,8 @@ public class JmsPublisherRoute extends RouteBuilder {
 		        for (int i = fields.size(); i<10; i++) {
 		        	fields.add("");
 		        }
-		        in.setBody(new QueueEvent(
+		        
+		        QueueEvent queueEvent = new QueueEvent(
 		        		Integer.parseInt(fields.get(0)),
 		        		fields.get(1),
 		        		fields.get(2),
@@ -42,11 +44,13 @@ public class JmsPublisherRoute extends RouteBuilder {
 		        		fields.get(6),
 		        		fields.get(7),
 		        		fields.get(8),
-		        		fields.get(9)));
+		        		fields.get(9));
+		        
+		        in.setBody(queueEvent);
 			}
 		})
-		//.marshal(jaxb)
-		.to("jms:topic:QueueActions");
+		.marshal(jaxb)
+		.to("activemq:queue:QueueActions?username={{jmsUsername}}&password={{jmsPassword}}");
 	}
 
 }

@@ -9,6 +9,7 @@
     	<feature>camel-jaxb</feature>    	
         <bundle>mvn:com.jjinterna.queueactions/queueactions-model/${pom.version}</bundle>
         <bundle>mvn:com.jjinterna.queueactions/queueactions-publisher-jms/${pom.version}</bundle>
+        <bundle>mvn:com.jjinterna.queueactions/queueactions-subscriber-jms/${pom.version}</bundle>
     </feature>
 
 </features>
