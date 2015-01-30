@@ -58,14 +58,14 @@ public class JmsRouteFactory implements ManagedServiceFactory {
 		JmsSubscriberRoute route = routes.get(pid);
 		if (route == null) {
 			LOG.info("Building new route");
-			addRoute(pid, new JmsSubscriberRoute());
+			addRoute(pid, new JmsSubscriberRoute(pid, properties));
 		} else {
 			LOG.info("Updating existing route");
 			//if (host.equals(route.getHost()) && port.equals(route.getPort())) {
 				//return; // only update route if properties changed
 			//}
 			removeRoute(pid, route);
-			addRoute(pid, new JmsSubscriberRoute());
+			addRoute(pid, new JmsSubscriberRoute(pid, properties));
 		}
 	}
 
@@ -77,8 +77,8 @@ public class JmsRouteFactory implements ManagedServiceFactory {
 
 	private void removeRoute(final String pid, final JmsSubscriberRoute route) {
 		try {
-			camelContext.stopRoute("myroute");
-			camelContext.removeRoute("myroute");
+			camelContext.stopRoute(pid);
+			camelContext.removeRoute(pid);
 		} catch (Exception e) {
 			LOG.error("Failed to stop and remove route " + pid);
 		}

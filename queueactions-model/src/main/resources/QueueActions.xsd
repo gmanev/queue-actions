@@ -5,7 +5,7 @@
     attributeFormDefault="unqualified"
     targetNamespace="http://queueactions.jjinterna.com/model">
 
-    <xsd:simpleType name="QueueEventType">
+    <xsd:simpleType name="QueueLogType">
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="ABANDON" />
             <xsd:enumeration value="ADDMEMBER" />
@@ -29,18 +29,43 @@
         </xsd:restriction>
     </xsd:simpleType>
 
-    <xsd:complexType name="QueueEvent">
+    <xsd:complexType name="QueueLog">
         <xsd:sequence>
         	<xsd:element name="timeId" type="xsd:int" />
         	<xsd:element name="callId" type="xsd:string" />
         	<xsd:element name="queue" type="xsd:string" />        	
         	<xsd:element name="agent" type="xsd:string" />
-        	<xsd:element name="verb" type="tns:QueueEventType" />
+        	<xsd:element name="verb" type="tns:QueueLogType" />
 			<xsd:element name="data1" type="xsd:string" minOccurs="0" />
 			<xsd:element name="data2" type="xsd:string" minOccurs="0" />
 			<xsd:element name="data3" type="xsd:string" minOccurs="0" />
 			<xsd:element name="data4" type="xsd:string" minOccurs="0" />
 			<xsd:element name="data5" type="xsd:string" minOccurs="0" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="CallState">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ENTERQUEUE" />
+            <xsd:enumeration value="ABANDON" />
+            <xsd:enumeration value="COMPLETE" />
+            <xsd:enumeration value="CONNECT" />
+            <xsd:enumeration value="EXITWITHTIMEOUT" />
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="CallEvent">
+        <xsd:sequence>
+        	<xsd:element name="callId" type="xsd:string" />
+        	<xsd:element name="callerId" type="xsd:string" />
+        	<xsd:element name="did" type="xsd:string" />
+        	<xsd:element name="queue" type="xsd:string" />        	
+        	<xsd:element name="agent" type="xsd:string" />
+			<xsd:element name="queueEnterTime" type="xsd:int" minOccurs="0" />
+			<xsd:element name="queueConnectTime" type="xsd:int" minOccurs="0" />
+			<xsd:element name="queueLeaveTime" type="xsd:int" minOccurs="0" />
+			<xsd:element name="state" type="tns:CallState" />
+<!--       	<xsd:element name="log" type="tns:QueueLog" minOccurs="0" maxOccurs="unbounded" /> -->        	
         </xsd:sequence>
     </xsd:complexType>
 
