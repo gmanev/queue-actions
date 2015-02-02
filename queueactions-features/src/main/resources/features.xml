@@ -6,10 +6,19 @@
     	<feature>camel-jms</feature>
     	<feature>camel-stream</feature>
     	<feature>camel-csv</feature>
-    	<feature>camel-jaxb</feature>    	
+    	<feature>camel-jaxb</feature>
+    	<feature>camel-jaxb</feature>
+    	<feature>activemq-broker</feature>    	
+    	<feature>activemq-camel</feature>    	    	
         <bundle>mvn:com.jjinterna.queueactions/queueactions-model/${pom.version}</bundle>
         <bundle>mvn:com.jjinterna.queueactions/queueactions-publisher-jms/${pom.version}</bundle>
         <bundle>mvn:com.jjinterna.queueactions/queueactions-subscriber-jms/${pom.version}</bundle>
+    </feature>
+
+    <feature name="queueactions-web" version="${pom.version}">
+        <feature>vaadin-bridge</feature>
+        <bundle>mvn:com.jjinterna.queueactions/queueactions-model/${pom.version}</bundle>
+        <bundle>mvn:com.jjinterna.queueactions/queueactions-web/${pom.version}</bundle>
     </feature>
 
 </features>

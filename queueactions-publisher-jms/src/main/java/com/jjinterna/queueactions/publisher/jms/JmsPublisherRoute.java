@@ -11,6 +11,7 @@ import org.apache.camel.model.dataformat.CsvDataFormat;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
 
 import com.jjinterna.queueactions.model.CallEvent;
+import com.jjinterna.queueactions.model.CallState;
 import com.jjinterna.queueactions.model.QueueLog;
 import com.jjinterna.queueactions.model.QueueLogType;
 
@@ -25,7 +26,7 @@ public class JmsPublisherRoute extends RouteBuilder {
 		.toF("activemq:topic:%s?deliveryPersistent=false&username={{jmsUsername}}&password={{jmsPassword}}", CallEvent.class.getName());		
 
 		from("direct:callCompleteRoute").id("callCompleteRoute")
-		.aggregate(header("CallID"), callEventAggregationStrategy)
+		.aggregate(header("QActionsCallID"), callEventAggregationStrategy)
 			.completionTimeout(3600 * 1000)
 			.eagerCheckCompletion()
 			.completionPredicate(new Predicate() {
@@ -43,7 +44,7 @@ public class JmsPublisherRoute extends RouteBuilder {
 		.to("direct:callEventLog");
 		
 		from("direct:callConnectRoute").id("callConnectRoute")
-		.aggregate(header("CallID"), callEventAggregationStrategy)
+		.aggregate(header("QActionsCallID"), callEventAggregationStrategy)
 			.completionTimeout(3600 * 1000)		
 			.eagerCheckCompletion()
 			.completionPredicate(new Predicate() {				
@@ -60,23 +61,31 @@ public class JmsPublisherRoute extends RouteBuilder {
 			})
 		.multicast()
 			.to("direct:callEventLog")
-			.filter(header("State").isEqualTo("CONNECT")).to("direct:callCompleteRoute").end()
+			.filter(header("QActionsState").isEqualTo(CallState.CONNECT)).to("direct:callCompleteRoute").end()
 		.end();
 
 		from("direct:callEnterQueueRoute").id("callEnterQueueRoute")
-		.aggregate(header("CallID"), callEventAggregationStrategy)
+		.aggregate(header("QActionsCallID"), callEventAggregationStrategy)
 			.completionTimeout(60 * 1000)
-			.completionPredicate(header("State").isEqualTo("ENTERQUEUE"))
+			.completionPredicate(header("QActionsState").isEqualTo(CallState.ENTERQUEUE))
 		.multicast()
 			.to("direct:callEventLog", "direct:callConnectRoute");
 
 		from("direct:queueLogRoute").id("queueLogRoute")
 		.choice()
-			.when(header("State").in("DID","ENTERQUEUE"))
+			.when(header("QActionsState").in(
+					QueueLogType.DID,
+					QueueLogType.ENTERQUEUE))
 				.to("direct:callEnterQueueRoute").stop()
-			.when(header("State").in("ABANDON","CONNECT","EXITWITHTIMEOUT","RINGNOANSWER"))
+			.when(header("QActionsState").in(
+					QueueLogType.ABANDON,
+					QueueLogType.CONNECT,
+					QueueLogType.EXITWITHTIMEOUT,
+					QueueLogType.RINGNOANSWER))
 				.to("direct:callConnectRoute").stop()
-			.when(header("State").in("COMPLETEAGENT","COMPLETECALLER"))
+			.when(header("QActionsState").in(
+					QueueLogType.COMPLETEAGENT,
+					QueueLogType.COMPLETECALLER))
 				.to("direct:callCompleteRoute").stop()
 		.end();
 
@@ -104,9 +113,9 @@ public class JmsPublisherRoute extends RouteBuilder {
 		        		fields.get(8),
 		        		fields.get(9));
 		        
-		        in.setHeader("CallID", queueLog.getCallId());
-		        in.setHeader("State", queueLog.getVerb().toString());
-		        in.setHeader("Queue", queueLog.getQueue());
+		        in.setHeader("QActionsCallID", queueLog.getCallId());
+		        in.setHeader("QActionsState", queueLog.getVerb().toString());
+		        in.setHeader("QActionsQueue", queueLog.getQueue());
 		        
 		        in.setBody(queueLog);
 			}

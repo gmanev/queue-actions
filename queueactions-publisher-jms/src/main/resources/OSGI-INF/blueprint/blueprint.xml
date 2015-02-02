@@ -21,7 +21,7 @@
   http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd
   ">
   
-    <cm:property-placeholder persistent-id="com.jjinterna.queueactions.publisher.jms" update-strategy="reload">
+    <cm:property-placeholder persistent-id="com.jjinterna.queueactions.publisher" update-strategy="reload">
         <cm:default-properties>
             <cm:property name="fileName" value="/var/log/asterisk/queue_log"/>
             <cm:property name="jmsUsername" value="karaf"/>
@@ -32,7 +32,7 @@
     <bean id="jmsPublisherRoute" class="com.jjinterna.queueactions.publisher.jms.JmsPublisherRoute">
     </bean>
 
-    <camelContext id="queueActionsJmsPublisher" xmlns="http://camel.apache.org/schema/blueprint">
+    <camelContext id="queueActionsPublisher" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
         <routeBuilder ref="jmsPublisherRoute" />
     </camelContext>	
 

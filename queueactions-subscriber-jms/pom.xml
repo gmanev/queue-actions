@@ -12,7 +12,6 @@
     	<camel.version>2.14.0</camel.version>
         <log4j-version>1.2.16</log4j-version>
         <slf4j-version>1.6.1</slf4j-version>
-        <activemq-version>5.12.0</activemq-version>
     </properties>
 
 	<dependencies>
@@ -28,14 +27,10 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-http</artifactId>
+            <artifactId>camel-http4</artifactId>
             <version>${camel.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-jms</artifactId>
-            <version>${camel.version}</version>
-        </dependency>
+
 		<dependency>
   			<groupId>org.osgi</groupId>
   			<artifactId>org.osgi.compendium</artifactId>

@@ -20,10 +20,10 @@
   
     <bean id="jmsRouteFactory" class="com.jjinterna.queueactions.subscriber.jms.impl.JmsRouteFactory" init-method="init" destroy-method="destroy">
 		<property name="context" ref="blueprintBundleContext"/>    
-		<property name="camelContext" ref="queueActionsJmsSubscriber"/>
+		<property name="camelContext" ref="queueActionsSubscriber"/>
     </bean>
     
-    <camelContext id="queueActionsJmsSubscriber" xmlns="http://camel.apache.org/schema/blueprint">
+    <camelContext id="queueActionsSubscriber" managementNamePattern="#name#" xmlns="http://camel.apache.org/schema/blueprint">
     </camelContext>	
 
 </blueprint>

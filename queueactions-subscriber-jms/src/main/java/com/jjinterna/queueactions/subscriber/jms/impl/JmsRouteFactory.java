@@ -19,10 +19,10 @@ public class JmsRouteFactory implements ManagedServiceFactory {
 	private CamelContext camelContext;
 	private BundleContext bundleContext;
 
-	private static final String CONFIG_PID = "com.jjinterna.queueactions.subscriber.jms";
+	private static final String CONFIG_PID = "com.jjinterna.queueactions.subscriber";
 	private ServiceRegistration managedServiceReg;
 
-	private Map<String, JmsSubscriberRoute> routes = new HashMap<>();
+	private Map<String, HttpActionRoute> routes = new HashMap<>();
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(JmsRouteFactory.class);
@@ -47,7 +47,7 @@ public class JmsRouteFactory implements ManagedServiceFactory {
 
 	@Override
 	public String getName() {
-		return "Factory for " + JmsSubscriberRoute.class.getSimpleName();
+		return "Factory for " + HttpActionRoute.class.getSimpleName();
 	}
 
 	@Override
@@ -55,17 +55,17 @@ public class JmsRouteFactory implements ManagedServiceFactory {
 			throws ConfigurationException {
 		LOG.debug("Updating...");
 
-		JmsSubscriberRoute route = routes.get(pid);
+		HttpActionRoute route = routes.get(pid);
 		if (route == null) {
 			LOG.info("Building new route");
-			addRoute(pid, new JmsSubscriberRoute(pid, properties));
+			addRoute(pid, new HttpActionRoute(pid, properties));
 		} else {
 			LOG.info("Updating existing route");
 			//if (host.equals(route.getHost()) && port.equals(route.getPort())) {
 				//return; // only update route if properties changed
 			//}
 			removeRoute(pid, route);
-			addRoute(pid, new JmsSubscriberRoute(pid, properties));
+			addRoute(pid, new HttpActionRoute(pid, properties));
 		}
 	}
 
@@ -75,7 +75,7 @@ public class JmsRouteFactory implements ManagedServiceFactory {
 		removeRoute(pid, routes.get(pid));
 	}
 
-	private void removeRoute(final String pid, final JmsSubscriberRoute route) {
+	private void removeRoute(final String pid, final HttpActionRoute route) {
 		try {
 			camelContext.stopRoute(pid);
 			camelContext.removeRoute(pid);
@@ -85,7 +85,7 @@ public class JmsRouteFactory implements ManagedServiceFactory {
 		routes.remove(pid);
 	}
 
-	private void addRoute(final String pid, final JmsSubscriberRoute route) {
+	private void addRoute(final String pid, final HttpActionRoute route) {
 		try {
 			camelContext.addRoutes(route);
 		} catch (Exception e) {

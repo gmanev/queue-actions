@@ -58,8 +58,8 @@ public class CallEventAggregationStrategy implements AggregationStrategy {
 			callEvent = (CallEvent) newExchange.getIn().getBody();
 		}
 		ex.getIn().setBody(callEvent);
-		ex.getIn().setHeader("State", callEvent.getState() != null ? callEvent.getState().toString() : null);
-		ex.getIn().setHeader("DID", callEvent.getDid());		
+		ex.getIn().setHeader("QActionsState", callEvent.getState() != null ? callEvent.getState().toString() : null);
+		ex.getIn().setHeader("QActionsDID", callEvent.getDid());		
 		return ex;
 	}
 
