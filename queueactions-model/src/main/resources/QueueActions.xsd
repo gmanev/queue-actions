@@ -1,8 +1,6 @@
 <xsd:schema
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:tns="http://queueactions.jjinterna.com/model"
-    elementFormDefault="qualified"
-    attributeFormDefault="unqualified"
     targetNamespace="http://queueactions.jjinterna.com/model">
 
     <xsd:simpleType name="QueueLogType">
@@ -43,6 +41,73 @@
 			<xsd:element name="data5" type="xsd:string" minOccurs="0" />
         </xsd:sequence>
     </xsd:complexType>
+
+    <xsd:complexType name="QueueActionsEvent">
+        <xsd:sequence>
+		</xsd:sequence>
+	</xsd:complexType>
+
+    <xsd:complexType name="QueueActionsCallEvent">
+        <xsd:complexContent>
+        	<xsd:extension base="tns:QueueActionsEvent">
+        		<xsd:sequence>
+        			<xsd:element name="callId" type="xsd:string" />
+        			<xsd:element name="callerId" type="xsd:string" />
+        			<xsd:element name="did" type="xsd:string" />
+        			<xsd:element name="queue" type="xsd:string" />        	
+        			<xsd:element name="agent" type="xsd:string" />
+					<xsd:element name="queueEnterTime" type="xsd:int" minOccurs="0" />
+					<xsd:element name="queueConnectTime" type="xsd:int" minOccurs="0" />
+					<xsd:element name="queueLeaveTime" type="xsd:int" minOccurs="0" />
+				</xsd:sequence>				
+        	</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+    <xsd:element name="CallEnterQueue">
+        <xsd:complexType>
+ 			<xsd:complexContent>
+      			<xsd:extension base="tns:QueueActionsCallEvent">
+        		</xsd:extension>
+    		</xsd:complexContent>        
+		</xsd:complexType>
+	</xsd:element>
+
+    <xsd:element name="CallAbandon" type="tns:QueueActionsCallEvent">
+        <xsd:complexType>
+ 			<xsd:complexContent>
+      			<xsd:extension base="tns:QueueActionsCallEvent">
+        		</xsd:extension>
+    		</xsd:complexContent>        
+		</xsd:complexType>
+	</xsd:element>
+
+    <xsd:element name="CallComplete" type="tns:QueueActionsCallEvent">
+        <xsd:complexType>
+ 			<xsd:complexContent>
+      			<xsd:extension base="tns:QueueActionsCallEvent">
+        		</xsd:extension>
+    		</xsd:complexContent>        
+		</xsd:complexType>
+	</xsd:element>
+
+    <xsd:element name="CallConnect" type="tns:QueueActionsCallEvent">
+        <xsd:complexType>
+ 			<xsd:complexContent>
+      			<xsd:extension base="tns:QueueActionsCallEvent">
+        		</xsd:extension>
+    		</xsd:complexContent>        
+		</xsd:complexType>
+	</xsd:element>
+
+    <xsd:element name="CallExitWithTimeout" type="tns:QueueActionsCallEvent">
+        <xsd:complexType>
+ 			<xsd:complexContent>
+      			<xsd:extension base="tns:QueueActionsCallEvent">
+        		</xsd:extension>
+    		</xsd:complexContent>        
+		</xsd:complexType>
+	</xsd:element>
 
     <xsd:simpleType name="CallState">
         <xsd:restriction base="xsd:string">

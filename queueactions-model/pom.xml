@@ -81,7 +81,7 @@
 										<bindingFile>${project.basedir}/src/main/resources/binding.xml</bindingFile>
 									</bindingFiles>
 									<extraargs>
-										<extraarg>-xjc-Xvalue-constructor</extraarg>
+										<!-- <extraarg>-xjc-Xvalue-constructor</extraarg> -->
 										<!-- Turns on the hashCode plugin -->
 										<!-- <extraarg>-xjc-XhashCode</extraarg> -->
 										<!-- Turns on the equals plugin -->

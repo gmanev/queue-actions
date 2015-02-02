@@ -2,9 +2,10 @@ package com.jjinterna.queueactions.subscriber.jms.impl;
 
 import java.util.Dictionary;
 
-import org.apache.camel.Component;
-import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.dataformat.JaxbDataFormat;
+
+import com.jjinterna.queueactions.model.QueueActionsEvent;
 
 public class HttpActionRoute extends RouteBuilder {
 
@@ -21,23 +22,20 @@ public class HttpActionRoute extends RouteBuilder {
 		//String componentName = properties.get("componentName");
 		//String httpMethod = properties.get("httpMethod");
 
-		Component component = getContext().getComponent("http4");
+		//Component component = getContext().getComponent("http4");
 		
-//		JaxbDataFormat jaxb = new JaxbDataFormat();
-//		jaxb.setContextPath(CallEvent.class.getPackage().getName());
+		JaxbDataFormat jaxb = new JaxbDataFormat();
+		jaxb.setContextPath(QueueActionsEvent.class.getPackage().getName());
 //		jaxb.setPartClass(CallEvent.class.getName());
 //		jaxb.setPartNamespace("{http://queueactions.jjinterna.com/model}CallEvent");
 
-		fromF("activemq:topic:%s?username=%s&password=%s", 
-				properties.get("topicName"), 
-				properties.get("jmsUsername"), 
-				properties.get("jmsPassword")).id(routeId)
-//		.marshal(jaxb)
+		fromF("activemq:topic:QueueActions?username=karaf&password=karaf").id(routeId)
+		.marshal(jaxb)
 		.removeHeaders("JMS*")
 		.removeHeaders("QActions*")
-		.setHeader(Exchange.HTTP_QUERY, simple(properties.get("httpQuery")))
-		.setBody(constant(""))
-		.to(properties.get("endpointUri"));
+		//.setHeader(Exchange.HTTP_QUERY, simple(properties.get("httpQuery")))
+		//.setBody(constant(""))
+		.log("${body}");
 	}
 
 }
