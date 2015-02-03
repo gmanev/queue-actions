@@ -1,6 +1,7 @@
 <xsd:schema
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     xmlns:tns="http://queueactions.jjinterna.com/model"
+    elementFormDefault="qualified"
     targetNamespace="http://queueactions.jjinterna.com/model">
 
     <xsd:simpleType name="QueueLogType">
@@ -108,30 +109,5 @@
     		</xsd:complexContent>        
 		</xsd:complexType>
 	</xsd:element>
-
-    <xsd:simpleType name="CallState">
-        <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="ENTERQUEUE" />
-            <xsd:enumeration value="ABANDON" />
-            <xsd:enumeration value="COMPLETE" />
-            <xsd:enumeration value="CONNECT" />
-            <xsd:enumeration value="EXITWITHTIMEOUT" />
-        </xsd:restriction>
-    </xsd:simpleType>
-
-    <xsd:complexType name="CallEvent">
-        <xsd:sequence>
-        	<xsd:element name="callId" type="xsd:string" />
-        	<xsd:element name="callerId" type="xsd:string" />
-        	<xsd:element name="did" type="xsd:string" />
-        	<xsd:element name="queue" type="xsd:string" />        	
-        	<xsd:element name="agent" type="xsd:string" />
-			<xsd:element name="queueEnterTime" type="xsd:int" minOccurs="0" />
-			<xsd:element name="queueConnectTime" type="xsd:int" minOccurs="0" />
-			<xsd:element name="queueLeaveTime" type="xsd:int" minOccurs="0" />
-			<xsd:element name="state" type="tns:CallState" />
-<!--       	<xsd:element name="log" type="tns:QueueLog" minOccurs="0" maxOccurs="unbounded" /> -->        	
-        </xsd:sequence>
-    </xsd:complexType>
 
 </xsd:schema>

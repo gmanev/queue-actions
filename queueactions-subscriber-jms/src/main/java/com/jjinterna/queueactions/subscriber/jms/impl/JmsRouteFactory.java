@@ -55,17 +55,25 @@ public class JmsRouteFactory implements ManagedServiceFactory {
 			throws ConfigurationException {
 		LOG.debug("Updating...");
 
+		Boolean routeEnable = false;
+		Object obj = properties.get("Enable");
+		if (obj != null) {
+			routeEnable = (Boolean) obj;
+		}
+		String routeName = (String) properties.get("Name");
+
 		HttpActionRoute route = routes.get(pid);
 		if (route == null) {
 			LOG.info("Building new route");
-			addRoute(pid, new HttpActionRoute(pid, properties));
+			if (routeEnable) {
+				addRoute(pid, new HttpActionRoute(routeName, properties));
+			}
 		} else {
-			LOG.info("Updating existing route");
-			//if (host.equals(route.getHost()) && port.equals(route.getPort())) {
-				//return; // only update route if properties changed
-			//}
+			LOG.info("Updating existing route");			
 			removeRoute(pid, route);
-			addRoute(pid, new HttpActionRoute(pid, properties));
+			if (routeEnable) {
+				addRoute(pid, new HttpActionRoute(routeName, properties));
+			}
 		}
 	}
 
@@ -77,10 +85,10 @@ public class JmsRouteFactory implements ManagedServiceFactory {
 
 	private void removeRoute(final String pid, final HttpActionRoute route) {
 		try {
-			camelContext.stopRoute(pid);
-			camelContext.removeRoute(pid);
+			camelContext.stopRoute(route.getRouteId());
+			camelContext.removeRoute(route.getRouteId());
 		} catch (Exception e) {
-			LOG.error("Failed to stop and remove route " + pid);
+			LOG.error("Failed to stop and remove route " + route.getRouteId());
 		}
 		routes.remove(pid);
 	}

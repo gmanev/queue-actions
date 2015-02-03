@@ -17,9 +17,11 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -30,12 +32,20 @@ public class QActionsApplication extends UI {
 
 	private static final String CONFIG_PID = "com.jjinterna.queueactions.subscriber";
 	private static final String filter =  "(service.factoryPid=" + CONFIG_PID + ")";
+	private static final String NAME = "Name";
+	private static final String ENDPOINT = "Endpoint";
+	private static final String ENABLE = "Enable";
+	private static final String CONFIGURATION = "Configuration";	
+	private static final String[] fieldNames = new String[] {
+		NAME, ENDPOINT, ENABLE
+	}; 
 	
 	private ConfigurationAdmin configAdmin;
 	private String title;
 
 	private Table actionList = new Table();
 	private Button addNewActionButton = new Button("New");
+	private Button saveChangesButton = new Button("Save");	
 	private Button removeActionButton = new Button("Remove this action");	
 	private FormLayout editorLayout = new FormLayout();
     private FieldGroup editorFields = new FieldGroup();
@@ -53,7 +63,7 @@ public class QActionsApplication extends UI {
         initLayout();
         initActionTable();
         initEditor();
-        initAddRemoveButtons();        
+        initButtons();
 	}
 
 	private void initLayout() {
@@ -66,17 +76,20 @@ public class QActionsApplication extends UI {
 		VerticalLayout leftLayout = new VerticalLayout();
 		splitPanel.addComponent(leftLayout);
 		splitPanel.addComponent(editorLayout);
+
+		HorizontalLayout hLayout = new HorizontalLayout();
+		hLayout.addComponent(addNewActionButton);
+//		hLayout.setComponentAlignment(addNewActionButton, Alignment.TOP_RIGHT);
+		
 		leftLayout.addComponent(actionList);
-		HorizontalLayout bottomLeftLayout = new HorizontalLayout();
-		leftLayout.addComponent(bottomLeftLayout);
-		bottomLeftLayout.addComponent(addNewActionButton);
+		leftLayout.addComponent(hLayout);		
 
 		/* Set the contents in the left of the split panel to use all the space */
 		leftLayout.setSizeFull();
 		leftLayout.setExpandRatio(actionList, 1);
 		actionList.setSizeFull();
 
-		bottomLeftLayout.setWidth("100%");
+		hLayout.setWidth("100%");
 
 		/* Put a little margin around the fields in the right side editor */
 		editorLayout.setMargin(true);
@@ -87,27 +100,32 @@ public class QActionsApplication extends UI {
 
 		editorLayout.addComponent(removeActionButton);
 
-		/* User interface can be created dynamically to reflect underlying data. */
 		String fieldName;
 		
-		fieldName = "Name";
+		fieldName = NAME;
 		TextField field = new TextField(fieldName);
 		editorLayout.addComponent(field);
 		field.setWidth("100%");
-
 		editorFields.bind(field, fieldName);
 
-		/*
-		 * Data can be buffered in the user interface. When doing so, commit()
-		 * writes the changes to the data source. Here we choose to write the
-		 * changes automatically without calling commit().
-		 */
-		editorFields.setBuffered(false);
+		fieldName = ENDPOINT;
+		TextField ep = new TextField(fieldName);
+		editorLayout.addComponent(ep);
+		ep.setWidth("100%");
+		editorFields.bind(ep, fieldName);
+
+		fieldName = ENABLE;
+		CheckBox cb = new CheckBox(fieldName);
+		editorLayout.addComponent(cb);
+		cb.setWidth("100%");
+		editorFields.bind(cb, fieldName);
+
+		editorLayout.addComponent(saveChangesButton);
 	}
 
 	private void initActionTable() {
 		actionList.setContainerDataSource(actionContainer);
-		actionList.setVisibleColumns(new String[] { "Name" });
+		actionList.setVisibleColumns(NAME, ENDPOINT, ENABLE);
 		actionList.setSelectable(true);
 		actionList.setImmediate(true);
 
@@ -124,30 +142,16 @@ public class QActionsApplication extends UI {
 		});
 	}
 
-	private void initAddRemoveButtons() {
+	private void initButtons() {
 		addNewActionButton.addClickListener(new ClickListener() {
 			public void buttonClick(ClickEvent event) {
 				actionContainer.removeAllContainerFilters();
 				Object actionId = actionContainer.addItemAt(0);
-
-				/*
-				 * Each Item has a set of Properties that hold values. Here we
-				 * set a couple of those.
-				 */
-				actionList.getContainerProperty(actionId, "Name").setValue(
-						"New");
-				
-				try {
-					Dictionary<String, String> props = new Hashtable<>();
-					props.put("foo", "bar");
-					Configuration conf = configAdmin.createFactoryConfiguration(CONFIG_PID, null);
-					conf.update(props);
-					actionList.getContainerProperty(actionId, "Configuration").setValue(conf);
-					actionList.select(actionId);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				actionList.getContainerProperty(actionId, NAME).setValue("New");
+				actionList.getContainerProperty(actionId, ENDPOINT).setValue("");
+				actionList.getContainerProperty(actionId, ENABLE).setValue(false);				
+				actionList.getContainerProperty(actionId, CONFIGURATION).setValue(null);				
+				actionList.select(actionId);
 			}
 		});
 
@@ -158,28 +162,58 @@ public class QActionsApplication extends UI {
 				try {
 					conf.delete();
 					actionList.removeItem(itemId);
+		            Notification.show("Deleted");					
 				} catch (IOException e) {
-					e.printStackTrace();
+		            Notification.show(e.getMessage());
 				}
 			}
 		});
+		
+		saveChangesButton.addClickListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					Object itemId = actionList.getValue();
+					Configuration conf = (Configuration) actionList.getContainerProperty(itemId, CONFIGURATION).getValue();
+					if (conf == null) {
+						conf = configAdmin.createFactoryConfiguration(CONFIG_PID, null);
+						actionList.getContainerProperty(itemId, CONFIGURATION).setValue(conf);
+					}
+					Dictionary<String, Object> props = new Hashtable<>();
+					props.put(NAME, editorFields.getField(NAME).getValue());
+					props.put(ENABLE, editorFields.getField(ENABLE).getValue());
+					props.put(ENDPOINT, editorFields.getField(ENDPOINT).getValue());					
+					conf.update(props);
+					editorFields.commit();
+		            Notification.show("Saved");					
+				} catch (Exception e) {
+		            Notification.show(e.getMessage());					
+				}	
+			}
+			
+		});
+	
 	}
 
 	private IndexedContainer createDatasource() {
 		IndexedContainer ic = new IndexedContainer();
 
-        ic.addContainerProperty("Name", String.class, "");
-        ic.addContainerProperty("Configuration", Configuration.class, "");        
+        ic.addContainerProperty(NAME, String.class, null);
+        ic.addContainerProperty(ENDPOINT, String.class, null);
+        ic.addContainerProperty(ENABLE, Boolean.class, null);        
+        ic.addContainerProperty(CONFIGURATION, Configuration.class, null);        
 
 		try {
 			Configuration[] configurations = configAdmin.listConfigurations(filter);
 			if (configurations != null) {
 				for (Configuration conf : configurations) {
 					String itemId = conf.getPid();
-
 					Item item = ic.addItem(itemId);
-					item.getItemProperty("Name").setValue(itemId);
-					item.getItemProperty("Configuration").setValue(conf);
+					item.getItemProperty(NAME).setValue(conf.getProperties().get(NAME));
+					item.getItemProperty(ENABLE).setValue(conf.getProperties().get(ENABLE));
+					item.getItemProperty(ENDPOINT).setValue(conf.getProperties().get(ENDPOINT));					
+					item.getItemProperty(CONFIGURATION).setValue(conf);
 				}
 			}
 		} catch (Exception e) {
