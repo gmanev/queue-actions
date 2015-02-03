@@ -80,7 +80,8 @@ public class JmsRouteFactory implements ManagedServiceFactory {
 	@Override
 	public void deleted(String pid) {
 		LOG.debug("Deleting...");
-		removeRoute(pid, routes.get(pid));
+		if (routes.get(pid) != null)
+			removeRoute(pid, routes.get(pid));
 	}
 
 	private void removeRoute(final String pid, final HttpActionRoute route) {

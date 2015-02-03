@@ -1,7 +1,9 @@
 package com.jjinterna.queueactions.web;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Dictionary;
+import java.util.HashSet;
 import java.util.Hashtable;
 
 import org.osgi.service.cm.Configuration;
@@ -22,6 +24,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -35,10 +38,17 @@ public class QActionsApplication extends UI {
 	private static final String NAME = "Name";
 	private static final String ENDPOINT = "Endpoint";
 	private static final String ENABLE = "Enable";
+	private static final String EVENT_SELECTOR = "EventSelector";
+	private static final String QUEUE_SELECTOR = "QueueSelector";
+	
 	private static final String CONFIGURATION = "Configuration";	
-	private static final String[] fieldNames = new String[] {
-		NAME, ENDPOINT, ENABLE
-	}; 
+	private static final String[] eventNames = new String[] {
+		"CallEnterQueue",
+		"CallConnect",
+		"CallComplete",
+		"CallAbandon",
+		"CallExitWithTimeout"
+	};
 	
 	private ConfigurationAdmin configAdmin;
 	private String title;
@@ -46,7 +56,7 @@ public class QActionsApplication extends UI {
 	private Table actionList = new Table();
 	private Button addNewActionButton = new Button("New");
 	private Button saveChangesButton = new Button("Save");	
-	private Button removeActionButton = new Button("Remove this action");	
+	private Button removeActionButton = new Button("Delete this action");	
 	private FormLayout editorLayout = new FormLayout();
     private FieldGroup editorFields = new FieldGroup();
     private IndexedContainer actionContainer;
@@ -106,19 +116,33 @@ public class QActionsApplication extends UI {
 		TextField field = new TextField(fieldName);
 		editorLayout.addComponent(field);
 		field.setWidth("100%");
+		field.setRequired(true);
 		editorFields.bind(field, fieldName);
 
 		fieldName = ENDPOINT;
 		TextField ep = new TextField(fieldName);
 		editorLayout.addComponent(ep);
 		ep.setWidth("100%");
+		ep.setRequired(true);		
 		editorFields.bind(ep, fieldName);
 
 		fieldName = ENABLE;
-		CheckBox cb = new CheckBox(fieldName);
+		CheckBox cb = new CheckBox("Action enable");
 		editorLayout.addComponent(cb);
 		cb.setWidth("100%");
 		editorFields.bind(cb, fieldName);
+
+		fieldName = EVENT_SELECTOR;
+		OptionGroup eventSelector = new OptionGroup(EVENT_SELECTOR);
+		eventSelector.setMultiSelect(true);
+		eventSelector.addItems(eventNames);
+		editorLayout.addComponent(eventSelector);
+		editorFields.bind(eventSelector, fieldName);
+
+		fieldName = QUEUE_SELECTOR;
+		TextField qs = new TextField(fieldName);
+		editorLayout.addComponent(qs);
+		editorFields.bind(qs, fieldName);
 
 		editorLayout.addComponent(saveChangesButton);
 	}
@@ -147,10 +171,6 @@ public class QActionsApplication extends UI {
 			public void buttonClick(ClickEvent event) {
 				actionContainer.removeAllContainerFilters();
 				Object actionId = actionContainer.addItemAt(0);
-				actionList.getContainerProperty(actionId, NAME).setValue("New");
-				actionList.getContainerProperty(actionId, ENDPOINT).setValue("");
-				actionList.getContainerProperty(actionId, ENABLE).setValue(false);				
-				actionList.getContainerProperty(actionId, CONFIGURATION).setValue(null);				
 				actionList.select(actionId);
 			}
 		});
@@ -158,9 +178,11 @@ public class QActionsApplication extends UI {
 		removeActionButton.addClickListener(new ClickListener() {
 			public void buttonClick(ClickEvent event) {
 				Object itemId = actionList.getValue();
-				Configuration conf = (Configuration) actionList.getItem(itemId).getItemProperty("Configuration").getValue();
+				Configuration conf = (Configuration) actionList.getItem(itemId).getItemProperty(CONFIGURATION).getValue();
 				try {
-					conf.delete();
+					if (conf != null) {
+						conf.delete();
+					}
 					actionList.removeItem(itemId);
 		            Notification.show("Deleted");					
 				} catch (IOException e) {
@@ -183,11 +205,16 @@ public class QActionsApplication extends UI {
 					Dictionary<String, Object> props = new Hashtable<>();
 					props.put(NAME, editorFields.getField(NAME).getValue());
 					props.put(ENABLE, editorFields.getField(ENABLE).getValue());
-					props.put(ENDPOINT, editorFields.getField(ENDPOINT).getValue());					
+					props.put(ENDPOINT, editorFields.getField(ENDPOINT).getValue());
+					Collection<String> c = (Collection<String>) editorFields.getField(EVENT_SELECTOR).getValue();
+					if (!c.isEmpty()) {
+						props.put(EVENT_SELECTOR, c);
+					}
 					conf.update(props);
 					editorFields.commit();
 		            Notification.show("Saved");					
 				} catch (Exception e) {
+					e.printStackTrace();
 		            Notification.show(e.getMessage());					
 				}	
 			}
@@ -199,21 +226,27 @@ public class QActionsApplication extends UI {
 	private IndexedContainer createDatasource() {
 		IndexedContainer ic = new IndexedContainer();
 
-        ic.addContainerProperty(NAME, String.class, null);
-        ic.addContainerProperty(ENDPOINT, String.class, null);
-        ic.addContainerProperty(ENABLE, Boolean.class, null);        
+        ic.addContainerProperty(NAME, String.class, "New");
+        ic.addContainerProperty(ENDPOINT, String.class, "");
+        ic.addContainerProperty(ENABLE, Boolean.class, false);        
         ic.addContainerProperty(CONFIGURATION, Configuration.class, null);        
-
+        ic.addContainerProperty(EVENT_SELECTOR, Collection.class, null);        
+        ic.addContainerProperty(QUEUE_SELECTOR, String.class, "");
+        
 		try {
 			Configuration[] configurations = configAdmin.listConfigurations(filter);
 			if (configurations != null) {
 				for (Configuration conf : configurations) {
 					String itemId = conf.getPid();
 					Item item = ic.addItem(itemId);
+					item.getItemProperty(CONFIGURATION).setValue(conf);
 					item.getItemProperty(NAME).setValue(conf.getProperties().get(NAME));
 					item.getItemProperty(ENABLE).setValue(conf.getProperties().get(ENABLE));
-					item.getItemProperty(ENDPOINT).setValue(conf.getProperties().get(ENDPOINT));					
-					item.getItemProperty(CONFIGURATION).setValue(conf);
+					item.getItemProperty(ENDPOINT).setValue(conf.getProperties().get(ENDPOINT));
+					Collection<String> c = (Collection<String>) conf.getProperties().get(EVENT_SELECTOR);
+					if (c != null) {
+						item.getItemProperty(EVENT_SELECTOR).setValue(new HashSet(c));
+					}
 				}
 			}
 		} catch (Exception e) {

@@ -30,7 +30,7 @@ public class HttpActionRoute extends RouteBuilder {
 		JaxbDataFormat jaxb = new JaxbDataFormat();
 		jaxb.setContextPath(QueueActionsEvent.class.getPackage().getName());
 
-		fromF("activemq:topic:QueueActions?username=karaf&password=karaf").id(getRouteId())
+		fromF("activemq:topic:QueueActions?username=karaf&password=karaf&selector=QActionsEvent IN('CallComplete','CallConnect')").id(getRouteId())
 		.process(new Processor() {
 			@Override
 			public void process(Exchange exchange) throws Exception {
