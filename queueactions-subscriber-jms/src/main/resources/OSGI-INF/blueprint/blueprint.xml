@@ -17,6 +17,13 @@
   http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-core/src/main/resources/org/apache/aries/blueprint/ext/blueprint-ext.xsd  
   http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd
   ">
+ 
+    <cm:property-placeholder persistent-id="com.jjinterna.queueactions.subscriber.jms" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="jmsUsername" value="karaf"/>
+			<cm:property name="jmsPassword" value="karaf"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
   
     <bean id="jmsRouteFactory" class="com.jjinterna.queueactions.subscriber.jms.impl.JmsRouteFactory" init-method="init" destroy-method="destroy">
 		<property name="context" ref="blueprintBundleContext"/>    
