@@ -7,7 +7,8 @@
     	<feature>camel-stream</feature>
     	<feature>camel-csv</feature>
     	<feature>camel-jaxb</feature>
-    	<feature>camel-jaxb</feature>
+    	<feature>camel-cxf</feature>
+    	<feature>camel-http4</feature>    	
     	<feature>activemq-broker</feature>    	
     	<feature>activemq-camel</feature>    	    	
         <bundle>mvn:com.jjinterna.queueactions/queueactions-model/${pom.version}</bundle>

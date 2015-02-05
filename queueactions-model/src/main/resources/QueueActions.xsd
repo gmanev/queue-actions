@@ -65,49 +65,49 @@
 		</xsd:complexContent>
 	</xsd:complexType>
 
-    <xsd:element name="CallEnterQueue">
-        <xsd:complexType>
- 			<xsd:complexContent>
-      			<xsd:extension base="tns:QueueActionsCallEvent">
-        		</xsd:extension>
-    		</xsd:complexContent>        
-		</xsd:complexType>
-	</xsd:element>
+    <xsd:complexType name="CallEnterQueue">
+        <xsd:complexContent>
+        	<xsd:extension base="tns:QueueActionsCallEvent">
+        		<xsd:sequence>
+				</xsd:sequence>				
+        	</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
-    <xsd:element name="CallAbandon" type="tns:QueueActionsCallEvent">
-        <xsd:complexType>
- 			<xsd:complexContent>
-      			<xsd:extension base="tns:QueueActionsCallEvent">
-        		</xsd:extension>
-    		</xsd:complexContent>        
-		</xsd:complexType>
-	</xsd:element>
+    <xsd:complexType name="CallAbandon">
+        <xsd:complexContent>
+        	<xsd:extension base="tns:QueueActionsCallEvent">
+        		<xsd:sequence>
+				</xsd:sequence>				
+        	</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
-    <xsd:element name="CallComplete" type="tns:QueueActionsCallEvent">
-        <xsd:complexType>
- 			<xsd:complexContent>
-      			<xsd:extension base="tns:QueueActionsCallEvent">
-        		</xsd:extension>
-    		</xsd:complexContent>        
-		</xsd:complexType>
-	</xsd:element>
+    <xsd:complexType name="CallComplete">
+        <xsd:complexContent>
+        	<xsd:extension base="tns:QueueActionsCallEvent">
+        		<xsd:sequence>
+				</xsd:sequence>				
+        	</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
-    <xsd:element name="CallConnect" type="tns:QueueActionsCallEvent">
-        <xsd:complexType>
- 			<xsd:complexContent>
-      			<xsd:extension base="tns:QueueActionsCallEvent">
-        		</xsd:extension>
-    		</xsd:complexContent>        
-		</xsd:complexType>
-	</xsd:element>
+    <xsd:complexType name="CallConnect">
+        <xsd:complexContent>
+        	<xsd:extension base="tns:QueueActionsCallEvent">
+        		<xsd:sequence>
+				</xsd:sequence>				
+        	</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
-    <xsd:element name="CallExitWithTimeout" type="tns:QueueActionsCallEvent">
-        <xsd:complexType>
- 			<xsd:complexContent>
-      			<xsd:extension base="tns:QueueActionsCallEvent">
-        		</xsd:extension>
-    		</xsd:complexContent>        
-		</xsd:complexType>
-	</xsd:element>
+    <xsd:complexType name="CallExitWithTimeout">
+        <xsd:complexContent>
+        	<xsd:extension base="tns:QueueActionsCallEvent">
+        		<xsd:sequence>
+				</xsd:sequence>				
+        	</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
 
 </xsd:schema>

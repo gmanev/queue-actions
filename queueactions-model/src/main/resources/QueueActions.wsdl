@@ -1,13 +1,67 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <wsdl:definitions name="QueueActionsServiceService"
-	targetNamespace="http://queueactions.jjinterna.com/service" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-	xmlns:tns="http://queueactions.jjinterna.com/service" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	targetNamespace="http://queueactions.jjinterna.com/service"
+	xmlns:tns="http://queueactions.jjinterna.com/service"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"	
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<wsdl:types>
 		<xsd:schema targetNamespace="http://queueactions.jjinterna.com/service"
+		    elementFormDefault="qualified"
 			xmlns:cns="http://queueactions.jjinterna.com/model">
 
 			<xsd:import schemaLocation="QueueActions.xsd" namespace="http://queueactions.jjinterna.com/model" />
+			
+ 			<xsd:element name="updateEvent" type="tns:updateEvent"/> 			
+			<xsd:element name="updateEventResponse" type="tns:updateEventResponse"/>
+
+			<xsd:complexType name="updateEvent">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" name="event" type="cns:QueueActionsEvent"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="updateEventResponse">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" name="return" type="xsd:boolean"/>
+				</xsd:sequence>
+			</xsd:complexType>
 		</xsd:schema>
 	</wsdl:types>
+	<wsdl:message name="updateEventResponse">
+		<wsdl:part name="parameters" element="tns:updateEventResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="updateEvent">
+		<wsdl:part name="parameters" element="tns:updateEvent">
+		</wsdl:part>
+	</wsdl:message>
+
+	<wsdl:portType name="QueueActionsService">
+		<wsdl:operation name="updateEvent">
+		<wsdl:input name="updateEvent" message="tns:updateEvent">
+		</wsdl:input>
+		<wsdl:output name="updateEventResponse" message="tns:updateEventResponse">
+		</wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:binding name="QueueActionsServiceServiceSoapBinding" type="tns:QueueActionsService">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="updateEvent">
+			<soap:operation soapAction="" style="document"/>
+			<wsdl:input name="updateEvent">
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="updateEventResponse">
+				<soap:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>	
+
+	<wsdl:service name="QueueActionsServiceService">
+		<wsdl:port name="QueueActionsServicePort" binding="tns:QueueActionsServiceServiceSoapBinding">
+			<soap:address location="http://localhost:8181/cxf/QueueActionsServicePort" />
+		</wsdl:port>
+	</wsdl:service>
+
 </wsdl:definitions>			

@@ -15,16 +15,16 @@ public class HttpActionRoute extends RouteBuilder {
 	private String endpoint;
 	private Collection<String> eventSelector;
 	private String queueSelector;
-	private String httpMethod;
+	private String endpointProtocol;
 	
 	public HttpActionRoute(String routeId, Dictionary properties) {
 		this.routeId = routeId;
-		this.endpoint = (String) properties.get("Endpoint");
+		this.endpoint = (String) properties.get("EndpointURI");
 		this.eventSelector = (Collection<String>) properties.get("EventSelector");
 		this.queueSelector = (String) properties.get("QueueSelector");
-		this.httpMethod = (String) properties.get("HTTPMethod");
-		if (httpMethod == null) {
-			httpMethod = "GET";
+		this.endpointProtocol = (String) properties.get("EndpointProtocol");
+		if (endpointProtocol == null) {
+			endpointProtocol = "GET";
 		}
 	}
 	
@@ -37,23 +37,32 @@ public class HttpActionRoute extends RouteBuilder {
 		
 		JaxbDataFormat jaxb = new JaxbDataFormat();
 		jaxb.setContextPath(QueueActionsEvent.class.getPackage().getName());
-
+		
 		fromF("activemq:topic:QueueActions?username={{jmsUsername}}&password={{jmsPassword}}%s", getSelectorString()).id(getRouteId())
-		.setHeader(Exchange.HTTP_METHOD, constant(httpMethod))
 		.choice()
-			.when(header(Exchange.HTTP_METHOD).isEqualTo("GET"))
+			.when(constant(endpointProtocol).isEqualTo("HTTP GET"))
 				.process(new QueueEvent2HttpQuery())
+				.setProperty("Endpoint", constant("http4://uri"))				
+				.setHeader(Exchange.HTTP_URI, constant(endpoint))				
+				.setHeader(Exchange.HTTP_METHOD, constant("GET"))
 				.setBody(constant(""))
 				.endChoice()
-			.when(header(Exchange.HTTP_METHOD).isEqualTo("POST"))
+			.when(constant(endpointProtocol).isEqualTo("HTTP POST"))
+				.process(new JAXBElementWrap())
 				.marshal(jaxb)
+				.setProperty("Endpoint", constant("http4://uri"))
+				.setHeader(Exchange.HTTP_URI, constant(endpoint))
+				.setHeader(Exchange.HTTP_METHOD, constant("POST"))				
 				.setHeader(Exchange.CONTENT_TYPE, constant("application/xml"))
+				.endChoice()
+			.when(constant(endpointProtocol).isEqualTo("SOAP"))
+				.setProperty("Endpoint", constant("cxf://" + endpoint + "?serviceClass=com.jjinterna.queueactions.service.QueueActionsService"))
+				.setHeader("operationName", constant("updateEvent"))
 				.endChoice()
 		.end()
 		.removeHeaders("JMS*")
 		.removeHeaders("QActions*")
-		.setHeader(Exchange.HTTP_URI, constant(endpoint))
-		.to("http4://uri");
+		.recipientList(simple("${property.Endpoint}"));
 	}
 
 	private String getSelectorString() {
