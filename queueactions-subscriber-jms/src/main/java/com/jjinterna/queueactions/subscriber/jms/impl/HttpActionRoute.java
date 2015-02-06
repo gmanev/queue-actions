@@ -56,8 +56,9 @@ public class HttpActionRoute extends RouteBuilder {
 				.setHeader(Exchange.CONTENT_TYPE, constant("application/xml"))
 				.endChoice()
 			.when(constant(endpointProtocol).isEqualTo("SOAP"))
-				.setProperty("Endpoint", constant("cxf://" + endpoint + "?serviceClass=com.jjinterna.queueactions.service.QueueActionsService"))
-				.setHeader("operationName", constant("updateEvent"))
+				.setProperty("Endpoint", constant("cxf://" + endpoint + 
+						"?serviceClass=com.jjinterna.queueactions.service.QueueActionsService&loggingFeatureEnabled=false"))
+				.setHeader("SOAPAction", constant("updateEvent"))
 				.endChoice()
 		.end()
 		.removeHeaders("JMS*")
