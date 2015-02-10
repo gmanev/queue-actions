@@ -37,6 +37,7 @@
 		<module>queueactions-features</module>
 		<module>queueactions-subscriber-jms</module>
 		<module>queueactions-web</module>
+		<module>queueactions-console</module>
 	</modules>
 
 	<build>

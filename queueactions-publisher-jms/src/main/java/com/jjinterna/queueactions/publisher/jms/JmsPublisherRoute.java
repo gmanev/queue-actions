@@ -21,6 +21,15 @@ public class JmsPublisherRoute extends RouteBuilder {
 	public void configure() throws Exception {
 		
 		AggregationStrategy callEventAggregationStrategy = new CallEventAggregationStrategy();
+		final QueueLogMark mark = new QueueLogMark();
+		
+		from("file://data?fileName=queue_log_mark&noop=true&initialDelay=0").id("getMark").startupOrder(1)
+			.convertBodyTo(String.class)
+			.bean(mark, "setMark");
+
+		from("direct:setMark").id("setMark")
+			.transform().simple("${body.timeId}", String.class)
+			.to("file://data?fileName=queue_log_mark");
 
 		from("direct:callEventLog").id("callEventLog")
 		.toF("activemq:topic:QueueActions?deliveryPersistent=false&username={{jmsUsername}}&password={{jmsPassword}}");		
@@ -112,16 +121,20 @@ public class JmsPublisherRoute extends RouteBuilder {
 		        queueLog.setData3(fields.get(7));
 		        queueLog.setData4(fields.get(8));
 		        queueLog.setData5(fields.get(9));
-		        
+
 		        in.setHeader("QActionsCallID", queueLog.getCallId());
 		        in.setHeader("QActionsEvent", queueLog.getVerb().toString());
 		        in.setHeader("QActionsQueue", queueLog.getQueue());
 		        
 		        in.setBody(queueLog);
+
+		        if (queueLog.getTimeId() <= mark.getMark()) {
+		        	exchange.setProperty(Exchange.ROUTE_STOP, Boolean.TRUE);
+		        }
 			}
 		})
-		.to("direct:queueLogRoute");
-		
+		.multicast()
+			.to("direct:queueLogRoute", "direct:setMark");
 	}
 
 }

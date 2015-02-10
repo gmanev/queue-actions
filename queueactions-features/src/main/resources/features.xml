@@ -22,4 +22,9 @@
         <bundle>mvn:com.jjinterna.queueactions/queueactions-web/${pom.version}</bundle>
     </feature>
 
+    <feature name="queueactions-console" version="${pom.version}">
+        <feature>vaadin-bridge</feature>
+        <bundle>mvn:com.jjinterna.queueactions/queueactions-model/${pom.version}</bundle>
+        <bundle>mvn:com.jjinterna.queueactions/queueactions-console/${pom.version}</bundle>
+    </feature>
 </features>
