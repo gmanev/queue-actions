@@ -26,7 +26,13 @@
   http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
   ">
 
-    <bean id="queueActionsServiceImpl" class="com.jjinterna.queueactions.console.impl.QueueActionsServiceImpl">
+    <cm:property-placeholder persistent-id="com.jjinterna.queueactions.console" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="imageURL" value=""/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <bean id="queueActionsServiceImpl" class="com.jjinterna.queueactions.console.impl.QueueActionsServiceImpl" init-method="init" destroy-method="destroy">
     </bean>
 
     <jaxws:endpoint
@@ -35,7 +41,7 @@
     	implementorClass="com.jjinterna.queueactions.console.impl.QueueActionsServiceImpl"/>
 
 	<bean id="appFactory" class="com.jjinterna.queueactions.console.impl.ApplicationFactoryImpl">
-<!-- 	<argument value="QueueActions ${project.version}"/> -->		
+    	<argument value="${imageURL}"/>
 	</bean>
 
 	<service ref="appFactory" interface="com.jjinterna.vaadin.vaadinbridge.ApplicationFactory">

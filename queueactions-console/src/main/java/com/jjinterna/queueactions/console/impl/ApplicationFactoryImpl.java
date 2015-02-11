@@ -5,9 +5,14 @@ import com.vaadin.ui.UI;
 
 public class ApplicationFactoryImpl implements ApplicationFactory {
 
+	String imageURL;
+	
+	public ApplicationFactoryImpl(String imageURL) {
+		this.imageURL = imageURL;
+	}
 	@Override
 	public UI getInstance() {
-		return new UIImpl();
+		return new UIImpl(imageURL);
 	}
 
 	@Override
