@@ -49,7 +49,7 @@ public class UIImpl extends UI {
 		layout.addComponent(timeLabel);
 		layout.setComponentAlignment(timeLabel, Alignment.MIDDLE_CENTER);
 		
-		if (imageURL != null) {
+		if (imageURL != null && imageURL.length() > 0) {
 			image = new Image();
 			image.setSource(new ExternalResource(imageURL));
 			image.setVisible(false);

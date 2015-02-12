@@ -13,7 +13,7 @@ public class QueueLogMark {
 		this.path = Paths.get(uri);
 	}
 	
-	public int getMark() throws NumberFormatException, IOException {
+	public int getMark() {
 		try {
 			return Integer.valueOf(new String(Files.readAllBytes(path)));
 		}
