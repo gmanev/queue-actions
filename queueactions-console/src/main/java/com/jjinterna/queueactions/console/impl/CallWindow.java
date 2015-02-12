@@ -52,7 +52,7 @@ public class CallWindow extends Window {
 		}
 		
 		if (call.getQueueConnectTime() != null) {
-			Date date = new Date((System.currentTimeMillis() / 1000 - call.getQueueEnterTime()) * 1000);
+			Date date = new Date((System.currentTimeMillis() / 1000 - call.getQueueConnectTime()) * 1000);
 			talkTime = dateFormat.format(date);			
 		}
 
