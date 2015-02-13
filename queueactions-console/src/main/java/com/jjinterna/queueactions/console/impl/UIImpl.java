@@ -31,9 +31,11 @@ public class UIImpl extends UI {
 	int step;
 
 	String imageURL;
+	String callerURL;
 	
-	public UIImpl(String imageURL) {
+	public UIImpl(String imageURL, String callerURL) {
 		this.imageURL = imageURL;
+		this.callerURL = callerURL;
 	}
 	
 	@Override
@@ -48,28 +50,28 @@ public class UIImpl extends UI {
 		timeLabel.setSizeUndefined();
 		layout.addComponent(timeLabel);
 		layout.setComponentAlignment(timeLabel, Alignment.MIDDLE_CENTER);
-		
-		if (imageURL != null && imageURL.length() > 0) {
+
+		if (imageURL != null) {
 			image = new Image();
 			image.setSource(new ExternalResource(imageURL));
 			image.setVisible(false);
 			layout.addComponent(image);
 			layout.setComponentAlignment(image, Alignment.MIDDLE_CENTER);
 		}
-		
+
 		addPollListener(new PollListener() {
-			
+
 			@Override
 			public void poll(PollEvent event) {
 				step++;
-				
+
 				if ((image != null) && (step % 10) == 0) {
 					timeLabel.setVisible(!timeLabel.isVisible());
 					image.setVisible(!timeLabel.isVisible());
 				}
 
 				timeLabel.setValue(getTime());
-				
+
 				// remove closed calls
 				Iterator<Entry<String, CallWindow>> entries = windows.entrySet().iterator();
 				while (entries.hasNext()) {
@@ -85,6 +87,7 @@ public class UIImpl extends UI {
 					CallWindow window = windows.get(call.getCallId());
 					if (window == null) {
 						window = new CallWindow();
+						window.setCallerURL(callerURL);
 						windows.put(call.getCallId(), window);
 						UI.getCurrent().addWindow(window);
 					}

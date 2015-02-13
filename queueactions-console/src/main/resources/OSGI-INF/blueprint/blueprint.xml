@@ -29,6 +29,7 @@
     <cm:property-placeholder persistent-id="com.jjinterna.queueactions.console" update-strategy="reload">
         <cm:default-properties>
             <cm:property name="imageURL" value=""/>
+            <cm:property name="callerURL" value=""/>
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -42,6 +43,7 @@
 
 	<bean id="appFactory" class="com.jjinterna.queueactions.console.impl.ApplicationFactoryImpl">
     	<argument value="${imageURL}"/>
+    	<argument value="${callerURL}"/>
 	</bean>
 
 	<service ref="appFactory" interface="com.jjinterna.vaadin.vaadinbridge.ApplicationFactory">

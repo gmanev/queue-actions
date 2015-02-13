@@ -2,13 +2,16 @@ package com.jjinterna.queueactions.publisher.jms;
 
 import java.util.List;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Predicate;
 import org.apache.camel.Processor;
+import org.apache.camel.VetoCamelContextStartException;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.CsvDataFormat;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.apache.camel.support.LifecycleStrategySupport;
 
 import com.jjinterna.queueactions.model.CallConnect;
 import com.jjinterna.queueactions.model.CallEnterQueue;
@@ -132,6 +135,30 @@ public class JmsPublisherRoute extends RouteBuilder {
 			}
 		})
 		.to("direct:queueLogRoute");
+		
+		final String fileName = getContext().resolvePropertyPlaceholders("{{fileName}}");
+		getContext().addLifecycleStrategy(new LifecycleStrategySupport() {
+			
+			Thread watcher = new Thread(new QueueLogWatcher(fileName) {
+				@Override
+				public void onEntryDelete() throws Exception {
+					getContext().stopRoute("queue_log");
+				}
+				@Override
+				public void onEntryCreate() throws Exception {
+					getContext().startRoute("queue_log");
+				}
+			}, fileName);
+			
+			@Override
+			public void onContextStart(CamelContext context) throws VetoCamelContextStartException {
+				watcher.start();
+			}
+		    @Override
+		    public void onContextStop(CamelContext context) {
+		    	watcher.interrupt();
+		    }
+	    });
 	}
 
 }

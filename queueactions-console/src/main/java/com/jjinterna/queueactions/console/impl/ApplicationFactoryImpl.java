@@ -5,14 +5,19 @@ import com.vaadin.ui.UI;
 
 public class ApplicationFactoryImpl implements ApplicationFactory {
 
-	String imageURL;
+	String imageURL, callerURL;
 	
-	public ApplicationFactoryImpl(String imageURL) {
-		this.imageURL = imageURL;
+	public ApplicationFactoryImpl(String imageURL, String callerURL) {
+		if (!"".equals(imageURL)) {
+			this.imageURL = imageURL;
+		}
+		if (!"".equals(callerURL)) {
+			this.callerURL = callerURL;
+		}
 	}
 	@Override
 	public UI getInstance() {
-		return new UIImpl(imageURL);
+		return new UIImpl(imageURL, callerURL);
 	}
 
 	@Override
