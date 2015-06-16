@@ -10,7 +10,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<vaadin.version>7.3.6</vaadin.version>
 		<log4j-version>1.2.16</log4j-version>
 		<slf4j-version>1.6.1</slf4j-version>
 	</properties>
@@ -54,7 +53,7 @@
 		<dependency>
 			<groupId>com.jjinterna.vaadin</groupId>
 			<artifactId>vaadin-bridge</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>${vaadin-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
